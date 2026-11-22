@@ -1,6 +1,11 @@
 const STORAGE_KEY = "rally-pickleball-state";
 const THEME_KEY = "rally-theme";
 const COLORS = ["#eaf1df", "#edf0ff", "#fff0e9", "#e7f4f1", "#f7ecdc", "#f4e9f2"];
+const GAME_TARGETS = [11, 15, 21];
+
+function isValidLosingScore(score, gameTo) {
+  return Number.isInteger(score) && score >= 0 && score < gameTo;
+}
 
 const playerList = document.querySelector("#player-list");
 const courtGrid = document.querySelector("#court-grid");
@@ -60,8 +65,8 @@ const state = {
     && Array.isArray(match.playerNames) && match.playerNames.every((name) => typeof name === "string")
     && match.playerIds.length === match.playerNames.length
     && match.playerIds.length === match.teamSize * 2
-    && [11, 15, 21].includes(match.gameTo)
-    && Number.isInteger(match.losingScore) && match.losingScore >= 0 && match.losingScore <= 10)
+    && GAME_TARGETS.includes(match.gameTo)
+    && isValidLosingScore(match.losingScore, match.gameTo))
     .map((match) => ({
       id: match.id,
       number: match.number,
@@ -151,24 +156,25 @@ function opponentScoreFor(player) {
   }, 0);
 }
 
+function compareStanding(a, b) {
+  const aGames = Math.max(1, a.gamesPlayed);
+  const bGames = Math.max(1, b.gamesPlayed);
+  return b.wins * aGames - a.wins * bGames
+    || Number(a.gamesPlayed === 0) - Number(b.gamesPlayed === 0)
+    || a.opponentScore * bGames - b.opponentScore * aGames;
+}
+
 function rankPlayers(players) {
   const rankedPlayers = players.map((player) => ({
     ...player,
+    gamesPlayed: player.wins + player.losses,
     opponentScore: opponentScoreFor(player)
-  })).sort((a, b) => {
-    const aGames = Math.max(1, a.wins + a.losses);
-    const bGames = Math.max(1, b.wins + b.losses);
-    return b.wins * aGames - a.wins * bGames
-      || a.opponentScore - b.opponentScore
-      || a.name.localeCompare(b.name);
-  });
+  })).sort((a, b) => compareStanding(a, b) || a.name.localeCompare(b.name));
 
   let currentRank = 0;
   return rankedPlayers.map((player, index) => {
     const previous = rankedPlayers[index - 1];
-    const tied = previous
-      && player.wins * Math.max(1, previous.wins + previous.losses) === previous.wins * Math.max(1, player.wins + player.losses)
-      && player.opponentScore === previous.opponentScore;
+    const tied = previous && compareStanding(player, previous) === 0;
     if (!tied) currentRank = index + 1;
     return { ...player, rank: currentRank };
   });
@@ -497,7 +503,7 @@ function renderRecordDialog() {
   });
   const targets = document.querySelector("#game-targets");
   targets.replaceChildren();
-  [11, 15, 21].forEach((target) => {
+  GAME_TARGETS.forEach((target) => {
     const button = document.createElement("button");
     button.className = `record-choice${activeRecord.gameTo === target ? " is-selected" : ""}`;
     button.type = "button";
@@ -505,13 +511,16 @@ function renderRecordDialog() {
     button.setAttribute("aria-pressed", String(activeRecord.gameTo === target));
     button.addEventListener("click", () => {
       activeRecord.gameTo = target;
+      if (!isValidLosingScore(activeRecord.losingScore, target)) {
+        activeRecord.losingScore = null;
+      }
       renderRecordDialog();
     });
     targets.append(button);
   });
   const losingScores = document.querySelector("#losing-scores");
   losingScores.replaceChildren();
-  for (let score = 0; score <= 10; score += 1) {
+  for (let score = 0; score < activeRecord.gameTo; score += 1) {
     const button = document.createElement("button");
     button.className = `record-choice${activeRecord.losingScore === score ? " is-selected" : ""}`;
     button.type = "button";
@@ -523,7 +532,7 @@ function renderRecordDialog() {
     });
     losingScores.append(button);
   }
-  document.querySelector("#record-match-form button[type='submit']").disabled = activeRecord.losingScore === null;
+  document.querySelector("#record-match-form button[type='submit']").disabled = !isValidLosingScore(activeRecord.losingScore, activeRecord.gameTo);
 }
 
 function applyMatchRecord(match, amount) {
@@ -537,7 +546,8 @@ function applyMatchRecord(match, amount) {
 }
 
 function saveMatchResult() {
-  if (!activeRecord || activeRecord.losingScore === null) return;
+  if (!activeRecord || !GAME_TARGETS.includes(activeRecord.gameTo)
+    || !isValidLosingScore(activeRecord.losingScore, activeRecord.gameTo)) return;
   const court = state.courts.find((item) => item.id === activeRecord.courtId);
   if (!court) return;
   const existing = state.matches.find((match) => match.id === court.matchId);
