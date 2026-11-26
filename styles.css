@@ -140,12 +140,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   gap: 14px;
 }
 .theme-toggle {
+  width: 34px;
+  height: 34px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 10px;
+  justify-content: center;
+  padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 50%;
   background: rgba(255, 255, 255, .08);
   color: var(--ink);
   cursor: pointer;
@@ -155,7 +157,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   text-transform: uppercase;
 }
 .theme-toggle:hover { border-color: var(--green); }
-.theme-toggle-text { white-space: nowrap; }
+.theme-toggle > span[aria-hidden="true"] { font-size: 17px; line-height: 1; }
+.theme-toggle-text { display: none; }
 .session-menu { padding: 7px 10px; border: 1px solid #b74436; border-radius: 999px; background: #b74436; color: #fff; font-size: 10px; font-weight: 700; cursor: pointer; }
 .session-menu:hover { border-color: #963729; background: #963729; }
 .results-button { width: 32px; height: 32px; display: grid; place-items: center; padding: 6px; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); color: var(--green); cursor: pointer; }
@@ -700,8 +703,8 @@ h1 span { color: var(--green); }
 @media (max-width: 760px) {
   .app-shell { padding: 0 5%; }
   .queue-area { flex-direction: column; }
-  .roster-panel { width: 100%; flex: none; }
-  .up-next-list { width: 100%; flex: none; }
+  .roster-panel { width: 100%; flex: none; order: 2; }
+  .up-next-list { width: 100%; flex: none; order: 1; }
   .court-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pickleball-art { margin-right: 0; transform: scale(.85); transform-origin: right center; }
   .intro-text { font-size: 14px; }
