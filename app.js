@@ -268,12 +268,14 @@ function playerById(id) {
   return state.players.find((player) => player.id === id);
 }
 
-function opponentScoreFor(player) {
+function pointDifferentialFor(player) {
   return state.matches.reduce((total, match) => {
     const playerIndex = match.playerIds.indexOf(player.id);
     if (playerIndex < 0 || match.gameTo === null) return total;
     const playerWon = (playerIndex < match.teamSize) === (match.winner === "team-a");
-    return total + (playerWon ? match.losingScore : match.gameTo);
+    const teamScore = playerWon ? match.gameTo : match.losingScore;
+    const opponentScore = playerWon ? match.losingScore : match.gameTo;
+    return total + teamScore - opponentScore;
   }, 0);
 }
 
@@ -282,14 +284,14 @@ function compareStanding(a, b) {
   const bGames = Math.max(1, b.gamesPlayed);
   return b.wins * aGames - a.wins * bGames
     || Number(a.gamesPlayed === 0) - Number(b.gamesPlayed === 0)
-    || a.opponentScore * bGames - b.opponentScore * aGames;
+    || b.pointDifferential - a.pointDifferential;
 }
 
 function rankPlayers(players) {
   const rankedPlayers = players.map((player) => ({
     ...player,
     gamesPlayed: player.gamesPlayed,
-    opponentScore: opponentScoreFor(player)
+    pointDifferential: pointDifferentialFor(player)
   })).sort((a, b) => compareStanding(a, b) || a.name.localeCompare(b.name));
 
   let currentRank = 0;
@@ -881,7 +883,14 @@ function renderResults(list = document.querySelector("#results-list")) {
     return;
   }
 
-  rankPlayers(state.players).forEach((player, index) => {
+  const rankedPlayers = rankPlayers(state.players);
+  const recordCounts = new Map();
+  rankedPlayers.forEach((player) => {
+    const record = `${player.wins}:${player.gamesPlayed}`;
+    recordCounts.set(record, (recordCounts.get(record) || 0) + 1);
+  });
+
+  rankedPlayers.forEach((player, index) => {
     const item = document.createElement("li");
     item.className = `result-row${index < 3 ? ` result-place-${index + 1}` : ""}`;
 
@@ -892,23 +901,27 @@ function renderResults(list = document.querySelector("#results-list")) {
     rank.classList.toggle("result-rank-medal", index < medals.length);
     rank.setAttribute("aria-label", `Place ${index + 1}`);
 
+    const playerInfo = document.createElement("div");
+    playerInfo.className = "result-player-info";
     const name = document.createElement("span");
     name.className = "result-name";
     name.textContent = player.name;
 
-    const stats = document.createElement("span");
-    stats.className = "result-stats";
-    const record = document.createElement("span");
-    record.className = "result-record";
-    record.textContent = `${player.wins} W · ${player.losses} L`;
     const gamesPlayed = player.gamesPlayed;
     const winRate = gamesPlayed ? Math.round((player.wins / gamesPlayed) * 100) : 0;
     const metrics = document.createElement("span");
     metrics.className = "result-metrics";
-    metrics.textContent = `${gamesPlayed} ${gamesPlayed === 1 ? "game" : "games"} · ${winRate}% win rate`;
-    stats.append(record, metrics);
+    metrics.textContent = `${winRate}% win rate · ${gamesPlayed} ${gamesPlayed === 1 ? "game" : "games"}`;
+    if (recordCounts.get(`${player.wins}:${player.gamesPlayed}`) > 1) {
+      metrics.textContent += ` · Point differential: ${player.pointDifferential > 0 ? "+" : ""}${player.pointDifferential}`;
+    }
+    playerInfo.append(name, metrics);
 
-    item.append(rank, name, stats);
+    const wins = document.createElement("span");
+    wins.className = "result-wins";
+    wins.textContent = `${player.wins} ${player.wins === 1 ? "Win" : "Wins"}`;
+
+    item.append(rank, playerInfo, wins);
     list.append(item);
   });
 }

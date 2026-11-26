@@ -259,8 +259,8 @@ h1 span { color: var(--green); }
 .summary-results .result-place-2 .result-rank, .summary-results .result-place-3 .result-rank { width: 30px; flex-basis: 30px; font-size: 21px; }
 .summary-results .result-place-1 .result-name { font-size: 18px; font-weight: 700; }
 .summary-results .result-place-2 .result-name, .summary-results .result-place-3 .result-name { font-size: 15px; font-weight: 700; }
-.summary-results .result-place-1 .result-record { font-size: 14px; }
-.summary-results .result-place-2 .result-record, .summary-results .result-place-3 .result-record { font-size: 12px; }
+.summary-results .result-place-1 .result-wins { font-size: 14px; }
+.summary-results .result-place-2 .result-wins, .summary-results .result-place-3 .result-wins { font-size: 12px; }
 .summary-results .result-place-1 .result-metrics { font-size: 11px; }
 .summary-results .result-place-2 .result-metrics, .summary-results .result-place-3 .result-metrics { font-size: 10px; }
 .summary-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 4px; }
@@ -628,10 +628,10 @@ h1 span { color: var(--green); }
 .result-place-3 { background: var(--podium-bronze); }
 .result-rank { width: 25px; flex: 0 0 25px; color: var(--green); font-size: 13px; font-weight: 700; text-align: center; }
 .result-rank-medal { font-size: 17px; }
-.result-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
-.result-stats { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
-.result-record { color: var(--ink); font-size: 11px; font-weight: 600; }
-.result-metrics { color: var(--muted); font-size: 9px; }
+.result-player-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.result-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+.result-wins { flex: 0 0 auto; color: var(--ink); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.result-metrics { color: var(--muted); font-size: 9px; line-height: 1.35; }
 .results-empty { padding: 18px 0; color: var(--muted); font-size: 12px; text-align: center; }
 .match-log { margin-top: 16px; padding: 18px; }
 .match-log-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
@@ -734,8 +734,8 @@ h1 span { color: var(--green); }
   .summary-results .result-place-2 .result-rank, .summary-results .result-place-3 .result-rank { width: 26px; flex-basis: 26px; font-size: 18px; }
   .summary-results .result-place-1 .result-name { font-size: 15px; }
   .summary-results .result-place-2 .result-name, .summary-results .result-place-3 .result-name { font-size: 14px; }
-  .summary-results .result-place-1 .result-record { font-size: 12px; }
-  .summary-results .result-place-2 .result-record, .summary-results .result-place-3 .result-record { font-size: 11px; }
+  .summary-results .result-place-1 .result-wins { font-size: 12px; }
+  .summary-results .result-place-2 .result-wins, .summary-results .result-place-3 .result-wins { font-size: 11px; }
   .summary-results .result-place-1 .result-metrics, .summary-results .result-place-2 .result-metrics, .summary-results .result-place-3 .result-metrics { font-size: 9px; }
   .summary-actions { flex-direction: column; }
   .summary-actions button { width: 100%; }
@@ -763,7 +763,6 @@ h1 span { color: var(--green); }
   .notice { font-size: 11px; }
   .court-grid { grid-template-columns: 1fr; }
   .court-card-body { min-height: 112px; }
-  .result-record { font-size: 12px; }
   .result-metrics { font-size: 10px; }
   .match-log { padding: 15px; }
   .match-log-table { min-width: 470px; }
