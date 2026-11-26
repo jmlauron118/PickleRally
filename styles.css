@@ -248,7 +248,7 @@ h1 span { color: var(--green); }
 .session-summary { width: 100%; max-width: 1000px; display: grid; gap: 16px; margin: 0 auto 30px; }
 .summary-heading .eyebrow { margin-bottom: 6px; }
 .summary-heading h2 { margin: 0; font: 700 27px Manrope, sans-serif; }
-.summary-results, .summary-match-log { padding: 20px; }
+.summary-results, .summary-match-log { min-width: 0; padding: 20px; }
 .summary-results .eyebrow { margin-bottom: 6px; }
 .summary-results h2 { margin: 0 0 16px; font: 700 18px Manrope, sans-serif; }
 .summary-results .results-list { display: flex; flex-direction: column; gap: 8px; overflow: visible; padding: 0; }
@@ -724,6 +724,10 @@ h1 span { color: var(--green); }
   .session-home-actions button { width: 100%; }
   .summary-heading h2 { font-size: 23px; }
   .summary-results, .summary-match-log { padding: 16px; }
+  .workspace .match-log-table { min-width: 0; }
+  .workspace .match-winner, .workspace .match-loser { min-width: 0; }
+  .summary-match-log .match-log-table { min-width: 0; }
+  .summary-match-log .match-winner, .summary-match-log .match-loser { min-width: 0; }
   .summary-results .result-place-1 { min-height: 68px; gap: 10px; padding: 0 12px; }
   .summary-results .result-place-2, .summary-results .result-place-3 { min-height: 56px; padding: 0 12px; }
   .summary-results .result-place-1 .result-rank { width: 30px; flex-basis: 30px; font-size: 23px; }
