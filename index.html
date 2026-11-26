@@ -17,6 +17,13 @@
         </a>
         <div class="topbar-note"><span class="live-dot"></span> PICKUP SESSION</div>
         <div class="topbar-actions">
+          <button id="session-menu" class="session-menu" type="button" hidden>End</button>
+          <button id="show-results" class="results-button" type="button" aria-label="Results" title="Results" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 4h10v7a5 5 0 0 1-10 0V4Z"/>
+              <path d="M7 6H4v3a4 4 0 0 0 4 4M17 6h3v3a4 4 0 0 1-4 4M12 16v5M8 21h8"/>
+            </svg>
+          </button>
           <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
             <span aria-hidden="true">☾</span>
             <span class="theme-toggle-text">Dark mode</span>
@@ -39,43 +46,18 @@
           </div>
         </section>
 
-        <div class="workspace">
-          <aside class="roster-panel panel">
-            <div class="panel-heading">
-              <div>
-                <p class="eyebrow">YOUR CREW</p>
-                <h2>Players <span class="count-pill" id="player-count">0</span></h2>
-              </div>
-              <span class="roster-icon" aria-hidden="true">♟</span>
-            </div>
-            <p class="panel-subtitle">Who’s playing today?</p>
+        <section class="session-home panel" id="session-home" aria-labelledby="session-home-title">
+          <p class="eyebrow">READY TO PLAY?</p>
+          <h2 id="session-home-title">Choose your session</h2>
+          <p id="session-home-description">Start with a fresh player list or bring back your saved players.</p>
+          <div class="session-home-actions">
+            <button id="resume-session" class="primary-button" type="button" hidden>Resume Session</button>
+            <button id="new-session" class="primary-button" type="button">Start New Session</button>
+            <button id="existing-session" class="secondary-button" type="button">Start Session (Existing players)</button>
+          </div>
+        </section>
 
-            <form class="add-player-form" id="add-player-form">
-              <label class="sr-only" for="player-name">Player name</label>
-              <input id="player-name" name="name" type="text" maxlength="32" placeholder="Add a player..." autocomplete="off" required>
-              <button class="add-player-button" type="submit" aria-label="Add player">+</button>
-            </form>
-
-            <div class="roster-meta">
-              <span>PLAYER ROSTER</span>
-              <div class="roster-tools">
-                <button class="text-button" id="show-results" type="button">Results</button>
-                <button class="text-button" id="reset-records" type="button">Reset All</button>
-                <button class="text-button" id="clear-players" type="button" hidden>Clear all</button>
-              </div>
-            </div>
-            <ul class="player-list" id="player-list" aria-live="polite"></ul>
-            <div class="empty-roster" id="empty-roster">
-              <span class="empty-icon" aria-hidden="true">＋</span>
-              <p>Your crew will show up here.</p>
-              <span>Add at least 2 players to get started.</span>
-            </div>
-            <div class="roster-footer">
-              <span class="avatar-stack" id="avatar-stack" aria-hidden="true"></span>
-              <span id="available-summary">0 players ready</span>
-            </div>
-          </aside>
-
+        <div class="workspace" id="workspace" hidden>
           <section class="court-area">
             <div class="setup-panel panel">
               <div class="setup-title">
@@ -106,6 +88,11 @@
                     <button id="add-court" type="button" aria-label="Add a court">+</button>
                   </div>
                 </div>
+                <label class="score-control" for="record-score">
+                  <span>RECORD SCORE</span>
+                  <input id="record-score" type="checkbox" checked>
+                  <span class="score-switch" aria-hidden="true"></span>
+                </label>
               </div>
               <div class="setup-hint">
                 <span class="hint-spark" aria-hidden="true">✳</span>
@@ -118,11 +105,36 @@
                 <p class="eyebrow">THE ACTION</p>
                 <h2>Your courts <span class="court-live"><span class="live-dot"></span> LIVE</span></h2>
               </div>
-              <button id="shuffle-all" class="shuffle-button" type="button">
-                <span aria-hidden="true">⤨</span> Randomize all
-              </button>
             </div>
             <div class="court-grid" id="court-grid"></div>
+            <div class="up-next-toolbar">
+              <button id="add-up-next-match" class="up-next-add-match" type="button">+ Add Match</button>
+              <button id="rebuild-all-up-next" class="up-next-rebuild-all" type="button" aria-label="Rebuild all Up Next matches">↻ Rebuild All</button>
+            </div>
+            <div class="queue-area">
+              <aside class="roster-panel panel">
+                <div class="panel-heading">
+                  <div>
+                    <h2>Available Players <span class="count-pill" id="player-count">0</span></h2>
+                  </div>
+                  <span class="roster-icon" aria-hidden="true">♟</span>
+                </div>
+
+                <form class="add-player-form" id="add-player-form">
+                  <label class="sr-only" for="player-name">Player name</label>
+                  <input id="player-name" name="name" type="text" maxlength="32" placeholder="Add a player..." autocomplete="off" required>
+                  <button class="add-player-button" type="submit" aria-label="Add player">+</button>
+                </form>
+
+                <ul class="player-list" id="player-list" aria-live="polite"></ul>
+                <div class="empty-roster" id="empty-roster">
+                  <span class="empty-icon" aria-hidden="true">＋</span>
+                  <p>Your crew will show up here.</p>
+                  <span>Add at least 2 players to get started.</span>
+                </div>
+              </aside>
+              <div class="up-next-list" id="up-next-list" aria-live="polite"></div>
+            </div>
             <section class="match-log panel" aria-labelledby="match-log-title">
               <div class="match-log-heading">
                 <div>
@@ -139,8 +151,8 @@
                       <th scope="col">Match</th>
                       <th scope="col">Win</th>
                       <th scope="col">Loss</th>
-                      <th scope="col">Score</th>
-                      <th scope="col"><span class="sr-only">Actions</span></th>
+                      <th scope="col" id="match-log-score-heading">Score</th>
+                      <th scope="col" class="match-actions-heading"><span class="sr-only">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody id="match-log-list"></tbody>
@@ -150,11 +162,49 @@
             </section>
             <p class="notice" id="notice" role="status" aria-live="polite"></p>
           </section>
+          <div class="start-game-row">
+            <p id="setup-error" role="status" aria-live="polite"></p>
+            <button id="start-game" class="primary-button" type="button">Start Game</button>
+          </div>
         </div>
-        <footer class="page-footer">
-          <span>GOOD PEOPLE. GOOD GAMES.</span>
-          <span>RALLY PICKLEBALL CLUB <span class="footer-ball" aria-hidden="true">●</span></span>
-        </footer>
+        <section class="session-summary" id="session-summary" aria-labelledby="summary-title" hidden>
+          <div class="summary-heading">
+            <p class="eyebrow">GOOD GAMES</p>
+            <h2 id="summary-title">Session complete</h2>
+          </div>
+          <section class="summary-results panel" aria-labelledby="summary-results-title">
+            <p class="eyebrow">PLAYER RESULTS</p>
+            <h2 id="summary-results-title">Results</h2>
+            <ol class="results-list" id="summary-results-list"></ol>
+          </section>
+          <section class="summary-match-log panel" aria-labelledby="summary-match-title">
+            <div class="match-log-heading">
+              <div>
+                <p class="eyebrow">SESSION HISTORY</p>
+                <h2 id="summary-match-title">Match log</h2>
+              </div>
+            </div>
+            <div class="match-log-table-wrap">
+              <table class="match-log-table summary-match-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Match</th>
+                    <th scope="col">Win</th>
+                    <th scope="col">Loss</th>
+                    <th scope="col" id="summary-score-heading">Score</th>
+                  </tr>
+                </thead>
+                <tbody id="summary-match-list"></tbody>
+              </table>
+              <p class="match-log-empty" id="summary-match-empty">No matches were recorded.</p>
+            </div>
+          </section>
+          <div class="summary-actions">
+            <button id="summary-new-session" class="primary-button" type="button">Start New Session</button>
+            <button id="summary-same-players" class="secondary-button" type="button">Start with same players</button>
+          </div>
+        </section>
+        <footer class="page-footer">GOOD PEOPLE. GOOD GAMES.</footer>
       </main>
     </div>
 
@@ -188,6 +238,31 @@
         <div class="replace-actions">
           <button class="secondary-button" id="random-replacement" type="button">Pick randomly</button>
           <button class="primary-button" id="save-replacement" type="submit">Change player</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="choose-players-dialog" id="choose-players-dialog" aria-labelledby="choose-players-title">
+      <form id="choose-players-form">
+        <h2 id="choose-players-title">Choose players</h2>
+        <p id="choose-players-count" role="status" aria-live="polite"></p>
+        <div class="choose-players-list" id="choose-players-list"></div>
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancel-choose-players" type="button">Cancel</button>
+          <button class="primary-button" id="assign-choose-players" type="submit" disabled>Assign to court</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="change-up-next-dialog" id="change-up-next-dialog" aria-labelledby="change-up-next-title">
+      <form id="change-up-next-form">
+        <h2 id="change-up-next-title">Change player</h2>
+        <label for="change-up-next-replacement">Replacement</label>
+        <select id="change-up-next-replacement" required></select>
+        <p>Choosing someone already in an Up Next match swaps the two players.</p>
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancel-change-up-next" type="button">Cancel</button>
+          <button class="primary-button" type="submit">Change player</button>
         </div>
       </form>
     </dialog>
